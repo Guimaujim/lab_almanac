@@ -8,8 +8,9 @@ Simple client web per temps
 '''
 
 import sys
-import urllib2
-import bs4
+import requests
+import json
+
 api_key = None
 
 class WeatherClient(object):
@@ -25,24 +26,12 @@ class WeatherClient(object):
         # Obtenir https://www.wunderground.com/weather/api/17afbc550df2656e/
         # Obtenir URL
         url = WeatherClient.url_base + self.api_key + \
-              WeatherClient.url_service["almanac"] + location + "." + "xml"
-        web = urllib2.urlopen(url)
-        page = web.read()
-        web.close()
+              WeatherClient.url_service["almanac"] + location + "." + "json"
+        web = requests.get(url)
+
         # Processar dades
-        soup = bs4.BeautifulSoup(page, "lxml")
-        maxim = soup.find("temp_high")
-        normal = maxim.find("normal").find("c").text
-        record_max = maxim.find("record").find("c").text
-        record_year = maxim.find("recordyear").text
-
-        resposta = {}
-        resposta["high"] = {}
-        resposta["high"]["record"] = record_max
-        resposta["high"]["normal"] = normal
-        resposta["high"]["year"] = record_year
-
-        pass
+        data = json.loads(web.text)
+        return data["almanac"]
 
 if __name__ == "__main__":
     if not api_key:
