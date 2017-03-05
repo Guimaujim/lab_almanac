@@ -10,6 +10,7 @@ Simple client web per temps
 import sys
 import requests
 import json
+import time
 
 api_key = None
 
@@ -18,6 +19,7 @@ class WeatherClient(object):
     url_base = 'http://api.wunderground.com/weather/api/'
     url_service = {"almanac": "/almanac/q/CA/",
                    "hourly": "/hourly/q/CA/"}
+    today = time.strftime("%d")
 
     def __init__(self, api_key):
         self.api_key = api_key
@@ -29,9 +31,20 @@ class WeatherClient(object):
               WeatherClient.url_service["almanac"] + location + "." + "json"
         web = requests.get(url)
 
-        # Processar dades
+        # Retornar dades
         data = json.loads(web.text)
         return data["almanac"]
+
+    def hourly(self, location):
+        # Obtenir https://www.wunderground.com/weather/api/17afbc550df2656e/
+        # Obtenir URL
+        url = WeatherClient.url_base + self.api_key + \
+              WeatherClient.url_service["hourly"] + location + "." + "json"
+        web = requests.get(url)
+
+        data = json.loads(web.text)
+        return data["hourly_forecast"]
+
 
 def print_almanac(almanac_data):
     # Imprimir temperatures record, i mitjana actual altes
@@ -51,3 +64,4 @@ if __name__ == "__main__":
 
     wc = WeatherClient(api_key)
     print_almanac(wc.almanac("Lleida"))
+    wc.hourly("Lleida")
