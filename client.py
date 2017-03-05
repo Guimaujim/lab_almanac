@@ -33,6 +33,15 @@ class WeatherClient(object):
         data = json.loads(web.text)
         return data["almanac"]
 
+def print_almanac(almanac_data):
+    # Imprimir temperatures record, i mitjana actual altes
+    print "Temperatures altes:"
+    print "Record maxim de %s C l'any %s en el dia d'avui" % (almanac_data["temp_high"]["record"]["C"], almanac_data["temp_high"]["recordyear"])
+    print "Mitjana de maxim de temperatura durant el dia: %s C" % (almanac_data["temp_high"]["normal"]["C"])
+    # Imprimir temperatures record, i mitjana actual baixes
+    print "Record minim de %s C l'any %s en el dia d'avui" % (almanac_data["temp_low"]["record"]["C"], almanac_data["temp_low"]["recordyear"])
+    print "Mitjana de maxim de temperatura durant el dia: %s C" % (almanac_data["temp_low"]["normal"]["C"])
+
 if __name__ == "__main__":
     if not api_key:
         try:
@@ -41,4 +50,4 @@ if __name__ == "__main__":
             print "La API a la linia de comandes"
 
     wc = WeatherClient(api_key)
-    wc.almanac("Lleida")
+    print_almanac(wc.almanac("Lleida"))
