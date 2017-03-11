@@ -13,13 +13,13 @@ import json
 import time
 
 api_key = None
+hour = int(time.strftime("%H"))+1
 
 class WeatherClient(object):
     """Client for Weather underground"""
     url_base = 'http://api.wunderground.com/weather/api/'
     url_service = {"almanac": "/almanac/q/CA/",
                    "hourly": "/hourly/q/CA/"}
-    today = time.strftime("%d")
 
     def __init__(self, api_key):
         self.api_key = api_key
@@ -48,12 +48,49 @@ class WeatherClient(object):
 
 def print_almanac(almanac_data):
     # Imprimir temperatures record, i mitjana actual altes
-    print "Temperatures altes:"
-    print "Record maxim de %s C l'any %s en el dia d'avui" % (almanac_data["temp_high"]["record"]["C"], almanac_data["temp_high"]["recordyear"])
-    print "Mitjana de maxim de temperatura durant el dia: %s C" % (almanac_data["temp_high"]["normal"]["C"])
+    print "Max. temperatures:"
+    print "Record max. of %s C in the year %s today" % (almanac_data["temp_high"]["record"]["C"], almanac_data["temp_high"]["recordyear"])
+    print "Average of %s C in today's date" % (almanac_data["temp_high"]["normal"]["C"])
     # Imprimir temperatures record, i mitjana actual baixes
-    print "Record minim de %s C l'any %s en el dia d'avui" % (almanac_data["temp_low"]["record"]["C"], almanac_data["temp_low"]["recordyear"])
-    print "Mitjana de maxim de temperatura durant el dia: %s C" % (almanac_data["temp_low"]["normal"]["C"])
+    print "Min. temperatures:"
+    print "Record min. of %s C in the year %s today" % (almanac_data["temp_low"]["record"]["C"], almanac_data["temp_low"]["recordyear"])
+    print "Average of %s C in today's date" % (almanac_data["temp_low"]["normal"]["C"])
+    print "------------------------------------------------"
+
+def print_hourly(hourly_data):
+    # Imprimir temps, temperatura, sensacio termica, humitat i vent actuals
+    current = hourly_data[0]
+    rain = False
+    hot = False
+    print "Current weather:"
+    print "Condition: %s" % (current["condition"])
+    print "Temperature: %s C" % (current["temp"]["metric"])
+    print "Thermal sensation: %s C" % (current["feelslike"]["metric"])
+    print "Wind speed: %s Km/h" % (current["wspd"]["metric"])
+    print "------------------------------------------------"
+    # Imprimir temps futur, agafant de 4 hores en 4 hores ens dona un bon rang de temperatures
+    for i in range (4, 24 - hour, 4):
+        current = hourly_data[i]
+        current_hour = hour + i
+        print "Weather at %s h:" % (current_hour)
+        print "Condition: %s" % (current["condition"])
+        print "Temperature: %s C" % (current["temp"]["metric"])
+        print "Thermal sensation: %s C" % (current["feelslike"]["metric"])
+        print "Wind speed: %s Km/h" % (current["wspd"]["metric"])
+        print "------------------------------------------------"
+
+        if 10 <= int(current["fctcode"]) >= 15:
+            rain = True
+        if int(current["temp"]["metric"]) >= 30:
+            hot = True
+    # Fer prediccio
+    if hot == True:
+        print "It's going to be really hot today, it's a good day to go to the swimming pool or the beach!"
+    if(int(current["temp"]["metric"]) < 20):
+        print "It's going to get cold at night, bring a jacket if you go outside!"
+    if rain == True:
+        print "It's going to rain, be sure to bring an umbrella!"
+
 
 if __name__ == "__main__":
     if not api_key:
@@ -64,4 +101,4 @@ if __name__ == "__main__":
 
     wc = WeatherClient(api_key)
     print_almanac(wc.almanac("Lleida"))
-    wc.hourly("Lleida")
+    print_hourly(wc.hourly("Lleida"))
