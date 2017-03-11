@@ -67,6 +67,7 @@ def print_hourly(hourly_data):
     print "Temperature: %s C" % (current["temp"]["metric"])
     print "Thermal sensation: %s C" % (current["feelslike"]["metric"])
     print "Wind speed: %s Km/h" % (current["wspd"]["metric"])
+    print "Humidity: %s %%" % (current["humidity"])
     print "------------------------------------------------"
     # Imprimir temps futur, agafant de 4 hores en 4 hores ens dona un bon rang de temperatures
     for i in range (4, 24 - hour, 4):
@@ -77,6 +78,7 @@ def print_hourly(hourly_data):
         print "Temperature: %s C" % (current["temp"]["metric"])
         print "Thermal sensation: %s C" % (current["feelslike"]["metric"])
         print "Wind speed: %s Km/h" % (current["wspd"]["metric"])
+        print "Humidity: %s %%" % (current["humidity"])
         print "------------------------------------------------"
 
         if 10 <= int(current["fctcode"]) >= 15:
